@@ -22,39 +22,44 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.sparkjava</groupId>
-            <artifactId>spark-core</artifactId>
-            <version>2.5</version>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.11.12</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.10</artifactId>
-            <version>2.2.0</version>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.4.6</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.10</artifactId>
-            <version>2.2.0</version>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>2.4.6</version>
         </dependency>
 
-        <!-- Neo4j -->
-<!--        <dependency>-->
-<!--            <groupId>neo4j-contrib</groupId>-->
-<!--            <artifactId>neo4j-spark-connector</artifactId>-->
-<!--            <version>2.4.5-M1</version>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-graphx_2.11</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+
+        <dependency>
+            <groupId>neo4j-contrib</groupId>
+            <artifactId>neo4j-spark-connector</artifactId>
+            <version>2.4.1-M1</version>
+        </dependency>
         <dependency>
             <groupId>org.neo4j.driver</groupId>
             <artifactId>neo4j-java-driver</artifactId>
             <version>4.0.1</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.neo4j.spark</groupId>-->
-<!--            <artifactId>neo4j-spark-connector_2.11</artifactId>-->
-<!--            <version>1.0.0-RC1</version>-->
-<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.neo4j.spark</groupId>-->
+        <!--            <artifactId>neo4j-spark-connector_2.11</artifactId>-->
+        <!--            <version>1.0.0-RC1</version>-->
+        <!--        </dependency>-->
 
     </dependencies>
     <repositories>
