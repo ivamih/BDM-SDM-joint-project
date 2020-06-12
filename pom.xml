@@ -26,6 +26,7 @@
             <artifactId>spark-core</artifactId>
             <version>2.5</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_2.10</artifactId>
@@ -38,7 +39,31 @@
             <version>2.2.0</version>
         </dependency>
 
+        <!-- Neo4j -->
+<!--        <dependency>-->
+<!--            <groupId>neo4j-contrib</groupId>-->
+<!--            <artifactId>neo4j-spark-connector</artifactId>-->
+<!--            <version>2.4.5-M1</version>-->
+<!--        </dependency>-->
+        <dependency>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.neo4j.spark</groupId>-->
+<!--            <artifactId>neo4j-spark-connector_2.11</artifactId>-->
+<!--            <version>1.0.0-RC1</version>-->
+<!--        </dependency>-->
+
     </dependencies>
+    <repositories>
+        <!-- list of other repositories -->
+        <repository>
+            <id>SparkPackagesRepo</id>
+            <url>http://dl.bintray.com/spark-packages/maven</url>
+        </repository>
+    </repositories>
 
 
 </project>
