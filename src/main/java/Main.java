@@ -91,7 +91,7 @@ public class Main {
         SparkSession spark_session = SparkSession.builder().master("local").appName("GO2").getOrCreate();
 
 //        UPLOAD USERS TO NEO4J
-        System.out.println( executeTransaction(session, "users.csv") );
+//        System.out.println( executeTransaction(session, "users.csv") );
 
 //       CONVERT JSON TO CSV nodes ( Skopje )
         Dataset<Row> dataset = spark_session.read().json("src/main/resources/skopje_graph.json");
@@ -119,8 +119,8 @@ public class Main {
         }).distinct();
 
 //        UPLOAD SKOPJE NODES TO NEO4J
-        nodes.saveAsTextFile("src/main/resources/skopje_nodes.csv");
-        System.out.println( executeTransaction(session, "skopje_nodes.csv") );
+//        nodes.saveAsTextFile("src/main/resources/skopje_nodes.csv");
+//        System.out.println( executeTransaction(session, "skopje_nodes.csv") );
 
 //      UPLOAD EDGES BETWEEN SKOPJE NODES TO NEO4J
         JavaPairRDD<Integer, String> edges = rdd.mapToPair(t ->
@@ -142,13 +142,19 @@ public class Main {
         // skip edges from n1 to n1
         JavaPairRDD<Integer, Tuple2<String, String>> joined = edges.join(edges).filter(t-> !t._2._1.equals(t._2._2));
 
-//        joined.foreach(t-> System.out.println(t));
+        joined.foreach(t-> System.out.println(t));
 
-        JavaRDD<String> joined_csv = joined.map(t-> t._1.toString()+","+t._2._1.split(",")[0]+","+t._2._2.split(",")[0]+","+t._2._1.split(",")[4]);
+        JavaRDD<String> joined_csv = joined.map(t->
+        {
+            String t1 = t._2._1.split(",")[0];
+            String t2 = t._2._2.split(",")[0];
+            String s = t._1.toString()+t1.substring(t1.length()-2,t1.length())+t2.substring(t2.length()-2,t2.length())+","+t1+","+t2+","+t._2._1.split(",")[4];
+            return s;
+        });
 
-//        joined_csv.foreach(t-> System.out.println(t));
-        joined_csv.saveAsTextFile("src/main/resources/skopje_ways.csv");
-        System.out.println( executeTransaction(session, "skopje_ways.csv") );
+        joined_csv.foreach(t-> System.out.println(t));
+//        joined_csv.saveAsTextFile("src/main/resources/skopje_ways.csv");
+//        System.out.println( executeTransaction(session, "skopje_ways.csv") );
 
 
 
