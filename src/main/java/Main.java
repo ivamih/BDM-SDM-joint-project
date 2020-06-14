@@ -51,6 +51,15 @@ public class Main {
     exampleSparkReadingFromNeo4j(spark, neo);
   }
 
+  /*
+    For graph created using
+    UNWIND range(1,100) as id
+  CREATE (p:Person {id:id}) WITH collect(p) as people
+  UNWIND people as p1
+  UNWIND range(1,10) as friend
+  WITH p1, people[(p1.id + friend) % size(people)] as p2
+  CREATE (p1)-[:KNOWS {years: abs(p2.id - p2.id)}]->(p2)
+     */
   private static void exampleSparkReadingFromNeo4j(SparkSession spark, Neo4j neo) {
     Reader reader = new Reader(spark, neo);
     Dataset<Row> dataset = reader.readAsDataFrame("MATCH (n:Person) RETURN id(n) as id ");
