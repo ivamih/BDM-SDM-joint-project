@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="joint-project" />
+        <module name="BDM-SDM-joint-project" />
       </profile>
     </annotationProcessing>
   </component>
