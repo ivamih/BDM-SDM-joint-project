@@ -61,11 +61,11 @@ public class Main {
                 else if (file.equalsIgnoreCase("skopje_ways.csv"))
                 {
                     result = tx.run( "LOAD CSV FROM 'file:///" + file +"' AS row\n" +
-                            " WITH toInteger(row[1]) AS point_id_1, toInteger(row[2]) AS point_id_2, row[0] AS way_id\n" +
+                            " WITH toInteger(row[1]) AS point_id_1, toInteger(row[2]) AS point_id_2, row[0] AS way_id, toInteger(row[3]) AS weight\n" +
                             " MATCH (p1:Point {id: point_id_1})\n" +
                             " MATCH (p2:Point {id: point_id_2})\n" +
                             " MERGE (p1)-[rel:way]->(p2)\n" +
-                            " SET rel.name = way_id\n" +
+                            " SET rel.name = way_id, rel.weight = weight\n" +
                             " RETURN count(rel)");
 
                 }
@@ -142,7 +142,9 @@ public class Main {
         // skip edges from n1 to n1
         JavaPairRDD<Integer, Tuple2<String, String>> joined = edges.join(edges).filter(t-> !t._2._1.equals(t._2._2));
 
-        JavaRDD<String> joined_csv = joined.map(t-> t._1.toString()+","+t._2._1.split(",")[0]+","+t._2._2.split(",")[0]);
+//        joined.foreach(t-> System.out.println(t));
+
+        JavaRDD<String> joined_csv = joined.map(t-> t._1.toString()+","+t._2._1.split(",")[0]+","+t._2._2.split(",")[0]+","+t._2._1.split(",")[4]);
 
 //        joined_csv.foreach(t-> System.out.println(t));
         joined_csv.saveAsTextFile("src/main/resources/skopje_ways.csv");
