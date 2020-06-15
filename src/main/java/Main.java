@@ -35,24 +35,33 @@ public class Main {
 
         SparkSession spark_session = SparkSession.builder().master("local").appName("GO2").getOrCreate();
 
-//       CONVERT JSON TO CSV nodes ( Skopje )
-        JavaRDD rdd = transformer.transformNodes(spark_session, "src/main/resources/skopje_graph.json");
+////       CONVERT JSON TO CSV nodes ( Skopje )
+//        JavaRDD rdd = transformer.transformNodes(spark_session, "src/main/resources/skopje_graph.json");
+//
+////      TRANSFORM EDGES BETWEEN SKOPJE NODES
+//        transformer.transformEdges(rdd,"src/main/resources/skopje_graph.json");
+//
+////       CONVERT JSON TO CSV nodes ( Belgrade )
+//        JavaRDD rddB = transformer.transformNodes(spark_session, "src/main/resources/belgrade_graph.json");
+//
+////      TRANSFORM EDGES BETWEEN BELGRADE NODES
+//        transformer.transformEdges(rddB,"src/main/resources/belgrade_graph.json");
 
-//      TRANSFORM EDGES BETWEEN SKOPJE NODES
-        transformer.transformEdges(rdd,"src/main/resources/skopje_graph.json");
+//        CREATE SKOPJE PATH NODES
+//        transformer.transformPaths(ctx, "src/main/resources/skopje_paths_no_time.csv");
+//
+////        CREATE BELGRADE PATH NODES
+//        transformer.transformPaths(ctx, "src/main/resources/belgrade_paths_no_time.csv");
 
-//       CONVERT JSON TO CSV nodes ( Belgrade )
-        JavaRDD rddB = transformer.transformNodes(spark_session, "src/main/resources/belgrade_graph.json");
-
-//      TRANSFORM EDGES BETWEEN BELGRADE NODES
-        transformer.transformEdges(rddB,"src/main/resources/belgrade_graph.json");
 
 //        UPLOAD to NEO4J
-        System.out.println( loader.executeTransaction(session, "users.csv"));
-        System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
-        System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
-        System.out.println( loader.executeTransaction(session, "belgrade_nodes.csv") );
-        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
+//        System.out.println( loader.executeTransaction(session, "users.csv"));
+//        System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
+//        System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
+//        System.out.println( loader.executeTransaction(session, "belgrade_nodes.csv") );
+//        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
+//        System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
+//        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
 
     }
 }

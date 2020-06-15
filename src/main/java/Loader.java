@@ -59,8 +59,31 @@ public class Loader {
                             " MERGE (p1)-[rel:way]->(p2)\n" +
                             " SET rel.name = way_id, rel.weight = weight\n" +
                             " RETURN count(rel) as belgrade_ways");
-
                 }
+                else if (file.equalsIgnoreCase("skopje_paths_nodes.csv")){
+                    result = tx.run( "LOAD CSV FROM 'file:///" + file +"' AS row\n" +
+                            " WITH toInteger(row[0]) AS path_id, row[1] AS repeatable_route, row[2] AS time_of_day\n" +
+                            " MERGE (p:Path {id: path_id})\n" +
+                            " SET p.path_id = path_id, p.repeatable_route = repeatable_route, p.time_of_day = time_of_day, p.city ='Skopje'\n" +
+                            " RETURN count(p)");
+                }
+                else if (file.equalsIgnoreCase("belgrade_paths_nodes.csv")){
+                    result = tx.run( "LOAD CSV FROM 'file:///" + file +"' AS row\n" +
+                            " WITH toInteger(row[0]) AS path_id, row[1] AS repeatable_route, row[2] AS time_of_day\n" +
+                            " MERGE (p:Path {id: path_id})\n" +
+                            " SET p.path_id = path_id, p.repeatable_route = repeatable_route, p.time_of_day = time_of_day, p.city ='Belgrade'\n" +
+                            " RETURN count(p)");
+                }
+//                else if (file.equalsIgnoreCase("skopje_user_path_edge.csv"))
+//                {
+//                    result = tx.run( "LOAD CSV WITH HEADERS FROM 'file:///" + file +"' AS row\n" +
+//                            " WITH toInteger(row.user_id) AS user_id, toInteger(row.path_id) AS path_id\n" +
+//                            " MATCH (u:User {id: user_id})\n" +
+//                            " MATCH (p:Path {id: path_id})\n" +
+//                            " MERGE (u)-[rel:takesPath]->(p)\n" +
+//                            " RETURN count(rel)");
+//                }
+
                 return result.single().toString();
             }
         } );

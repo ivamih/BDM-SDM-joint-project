@@ -1,5 +1,6 @@
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -69,6 +70,34 @@ public class Transformer {
         }
 
 
+    }
+
+    public static void transformPaths(JavaSparkContext ctx, String file) {
+        JavaRDD<String> paths = ctx.textFile(file);
+
+        JavaRDD path_nodes = paths.map(t ->
+        {
+            String path_id = t.split(",")[0];
+            String repeatable_route = t.split(",")[1];
+            String hours = t.split(",")[2];
+            String minutes = t.split(",")[3];
+
+            if (hours.length() < 2)
+                hours = "0" + hours;
+            if (minutes.length() < 2)
+                minutes = "0" + minutes;
+
+            String time = hours + ":" + minutes;
+            return path_id + "," + repeatable_route + "," + time;
+        }).distinct().coalesce(1);
+
+        if (file.contains("skopje"))
+        {
+            path_nodes.saveAsTextFile("src/main/resources/skopje_paths_nodes.csv");
+        }
+        else if (file.contains("belgrade")) {
+            path_nodes.saveAsTextFile("src/main/resources/belgrade_paths_nodes.csv");
+        }
     }
 
 }
