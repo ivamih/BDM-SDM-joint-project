@@ -1,13 +1,8 @@
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
-
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.sql.*;
-
-import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.sql.SparkSession;
-
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
@@ -21,7 +16,6 @@ public class Main {
 
     public static void main(String[] args) {
         Driver driver;
-        Loader loader = new Loader();
         Transformer transformer = new Transformer();
         CSVGenerator csvGenerator = new CSVGenerator();
 
@@ -33,11 +27,13 @@ public class Main {
         JavaSparkContext ctx = new JavaSparkContext(conf);
 
 
-        driver = GraphDatabase.driver("bolt://localhost:11002",AuthTokens.basic("neo4j", "iva"));
+        driver = GraphDatabase.driver("bolt://localhost:11002", AuthTokens.basic("neo4j", "iva"));
         Session session = driver.session();
+        Loader loader = new Loader(session);
+
 
         SparkSession spark_session = SparkSession.builder().master("local").appName("GO2").getOrCreate();
-
+        Processor processor = new Processor(spark_session);
 
 
 //        TRANSFORM USER ID
@@ -62,6 +58,13 @@ public class Main {
 ////        CREATE BELGRADE PATH NODES
 //        transformer.transformPaths(ctx, "src/main/resources/belgrade_paths_no_time.csv");
 
+////            Infer BELGRADE near Nodes
+//        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_nodes.csv",
+//                0.5);
+////            Infer SKOPJE near Nodes
+//        processor.inferNearPoints(
+//            "src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_nodes.csv",0.5);
+
 
 //        UPLOAD to NEO4J
 //        System.out.println( loader.executeTransaction(session, "skopje_users.csv"));
@@ -72,6 +75,16 @@ public class Main {
 //        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
 //        System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
 //        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
+
+        //    System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
+        //    System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
+
+        //      Naive recommendation, still not working, until associations are defined and we run and
+        // identify time functions
+        //    System.out.println(loader.findRideShareRecommendations("somePathId"));
+        spark_session.stop();
+        session.close();
+        driver.close();
 
     }
 }
