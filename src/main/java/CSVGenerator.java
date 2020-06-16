@@ -66,10 +66,11 @@ public class CSVGenerator {
     public static void main(String[] args) {
         System.setProperty("hadoop.home.dir", HADOOP_COMMON_PATH);
         SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
-        Loader loader = new Loader();
-        JavaSparkContext ctx = new JavaSparkContext(conf);
         Driver driver = GraphDatabase.driver("bolt://localhost:11002", AuthTokens.basic("neo4j", "iva"));
+
         Session session = driver.session();
+        Loader loader = new Loader(session);
+        JavaSparkContext ctx = new JavaSparkContext(conf);
 
 //          CREATE SKOPJE PATH TO POINT EDGES
 //        generatePathToPointEdge("src/main/resources/skopje_nodes.csv/part-00000",
