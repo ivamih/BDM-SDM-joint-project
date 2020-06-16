@@ -1,7 +1,8 @@
-import org.neo4j.driver.Result;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.Transaction;
-import org.neo4j.driver.TransactionWork;
+import org.neo4j.driver.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Loader {
   private Session session;
@@ -132,5 +133,18 @@ public class Loader {
                 + " RETURN count(rel)")
         .peek()
         .toString();
+  }
+
+  String findRideShareRecommendations(String pathId) {
+    Map<String, Object> params = new HashMap<>();
+    params.put("pathId", pathId);
+    String query =
+        "MATCH (requestedPath: Path {id: $pathId)),(requestedPath)-[:start]->(requesterStartPoint), (requestedPath)-[:end]->(requesterEndPoint)\n"
+            + "MATCH (offeredPath: Path)-[:start]-()-[:near]->(requesterStartPoint), (offeredPath: Path)-[:end]-()-[:near]->(requesterEndPoint)\n"
+            + "WHERE abs(offeredTime - requestedTime) <= 20mins\n"
+            + "MATCH (offeringUser: User)-[:has_path]->(offeredPath)\n"
+            + "RETURN offeringUser";
+    List<Record> list = session.readTransaction((tx) -> tx.run(query, params)).list();
+    return list.toString();
   }
 }

@@ -75,6 +75,10 @@ public class Main {
     //        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
     //    System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
     //    System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
+
+    //      Naive recommendation, still not working, until associations are defined and we run and
+    // identify time functions
+    //    System.out.println(loader.findRideShareRecommendations("somePathId"));
     spark_session.stop();
     session.close();
     driver.close();
