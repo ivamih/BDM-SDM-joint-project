@@ -3,3 +3,4 @@
 .idea
 src/main/resources/belgrade_near_nodes.csv/
 src/main/resources/skopje_near_nodes.csv/
+data/

@@ -13,7 +13,6 @@ public class Main {
 
   public static void main(String[] args) {
     Driver driver;
-    Loader loader = new Loader();
     Transformer transformer = new Transformer();
 
     System.setProperty("hadoop.home.dir", HADOOP_COMMON_PATH);
@@ -23,8 +22,9 @@ public class Main {
     //    SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
     //        JavaSparkContext ctx = new JavaSparkContext(conf);
 
-    driver = GraphDatabase.driver("bolt://localhost:11002", AuthTokens.basic("neo4j", "iva"));
+    driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "password"));
     Session session = driver.session();
+    Loader loader = new Loader(session);
 
     SparkSession spark_session =
         SparkSession.builder().master("local").appName("GO2").getOrCreate();
@@ -65,12 +65,18 @@ public class Main {
     //        UPLOAD to NEO4J
     //            System.out.println( loader.executeTransaction(session, "skopje_users.csv"));
     //        System.out.println( loader.executeTransaction(session, "belgrade_users.csv"));
-    //        System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
+    //            System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
     //        System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
-    //        System.out.println( loader.executeTransaction(session, "belgrade_nodes.csv") );
+    //    System.out.println(
+    //        Loader.executeTransaction(
+    //            session, "belgrade_nodes.csv"));
     //        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
     //        System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
     //        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
-
+    //    System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
+    //    System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
+    spark_session.stop();
+    session.close();
+    driver.close();
   }
 }
