@@ -116,7 +116,16 @@ public class Transformer {
 
         JavaRDD path_nodes = paths.map(t ->
         {
-            String path_id = t.split(",")[0];
+            String path_id = "";
+
+            if (file.contains("skopje"))
+            {
+                path_id = "111"+t.split(",")[0];
+            }
+            else if(file.contains("belgrade"))
+            {
+                path_id = "222"+t.split(",")[0];
+            }
             String repeatable_route = t.split(",")[1];
             String hours = t.split(",")[2];
             String minutes = t.split(",")[3];

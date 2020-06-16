@@ -6,10 +6,11 @@ import org.neo4j.driver.TransactionWork;
 public class Loader {
     public static String executeTransaction(Session session, String file){
         /* Before uploading to Nao4j do:
-            CREATE (node:User), (node:Point)
+            CREATE (node:User), (node:Point), (node:Path)
             CREATE CONSTRAINT ON (p:User) ASSERT p.id IS UNIQUE;
             CREATE CONSTRAINT ON (p:Point) ASSERT p.id IS UNIQUE;
-            */
+            CREATE CONSTRAINT ON (p:Path) ASSERT p.path_id IS UNIQUE;
+         */
         String res = session.writeTransaction(new TransactionWork<String>()
         {
             Result result;
@@ -74,16 +75,15 @@ public class Loader {
                             " SET p.path_id = path_id, p.repeatable_route = repeatable_route, p.time_of_day = time_of_day, p.city ='Belgrade'\n" +
                             " RETURN count(p)");
                 }
-//                else if (file.equalsIgnoreCase("skopje_user_path_edge.csv"))
-//                {
-//                    result = tx.run( "LOAD CSV WITH HEADERS FROM 'file:///" + file +"' AS row\n" +
-//                            " WITH toInteger(row.user_id) AS user_id, toInteger(row.path_id) AS path_id\n" +
-//                            " MATCH (u:User {id: user_id})\n" +
-//                            " MATCH (p:Path {id: path_id})\n" +
-//                            " MERGE (u)-[rel:takesPath]->(p)\n" +
-//                            " RETURN count(rel)");
-//                }
-
+                else if (file.equalsIgnoreCase("skopje_takes.csv") || file.equalsIgnoreCase("belgrade_takes.csv"))
+                {
+                    result = tx.run( "LOAD CSV FROM 'file:///" + file +"' AS row\n" +
+                            " WITH toInteger(row[0]) AS user_id, toInteger(row[1]) AS path_id\n" +
+                            " MATCH (u:User {id: user_id})\n" +
+                            " MATCH (p:Path {id: path_id})\n" +
+                            " MERGE (u)-[rel:takes]->(p)\n" +
+                            " RETURN count(rel)");
+                }
                 return result.single().toString();
             }
         } );

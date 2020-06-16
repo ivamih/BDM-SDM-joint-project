@@ -13,6 +13,7 @@ import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.Session;
 
+import org.neo4j.spark.*;
 
 public class Main {
 
@@ -22,18 +23,21 @@ public class Main {
         Driver driver;
         Loader loader = new Loader();
         Transformer transformer = new Transformer();
+        CSVGenerator csvGenerator = new CSVGenerator();
 
         System.setProperty("hadoop.home.dir", HADOOP_COMMON_PATH);
         LogManager.getRootLogger().setLevel(Level.ERROR);
         LogManager.shutdown();
 
-//        SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
-//        JavaSparkContext ctx = new JavaSparkContext(conf);
+        SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
+        JavaSparkContext ctx = new JavaSparkContext(conf);
+
 
         driver = GraphDatabase.driver("bolt://localhost:11002",AuthTokens.basic("neo4j", "iva"));
         Session session = driver.session();
 
         SparkSession spark_session = SparkSession.builder().master("local").appName("GO2").getOrCreate();
+
 
 
 //        TRANSFORM USER ID
@@ -52,7 +56,7 @@ public class Main {
 ////      TRANSFORM EDGES BETWEEN BELGRADE NODES
 //        transformer.transformEdges(rddB,"src/main/resources/belgrade_graph.json");
 
-//        CREATE SKOPJE PATH NODES
+////        CREATE SKOPJE PATH NODES
 //        transformer.transformPaths(ctx, "src/main/resources/skopje_paths_no_time.csv");
 //
 ////        CREATE BELGRADE PATH NODES
@@ -60,8 +64,8 @@ public class Main {
 
 
 //        UPLOAD to NEO4J
-        System.out.println( loader.executeTransaction(session, "skopje_users.csv"));
-        System.out.println( loader.executeTransaction(session, "belgrade_users.csv"));
+//        System.out.println( loader.executeTransaction(session, "skopje_users.csv"));
+//        System.out.println( loader.executeTransaction(session, "belgrade_users.csv"));
 //        System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
 //        System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
 //        System.out.println( loader.executeTransaction(session, "belgrade_nodes.csv") );
