@@ -9,11 +9,12 @@ import org.neo4j.driver.Session;
 public class Main {
 
   static String HADOOP_COMMON_PATH =
-      "C:\\Users\\Iva\\Desktop\\UPC\\BDM\\Project\\joint-project\\src\\main\\resources\\winutils";
+      "C:\\Users\\Tamara Bojanic\\Desktop\\UPC\\BDM-SDM-joint-project\\src\\main\\resources\\winutils";
 
   public static void main(String[] args) {
     Driver driver;
     Transformer transformer = new Transformer();
+    EdgeCreator ec = new EdgeCreator();
 
     System.setProperty("hadoop.home.dir", HADOOP_COMMON_PATH);
     LogManager.getRootLogger().setLevel(Level.ERROR);
@@ -62,19 +63,34 @@ public class Main {
     //        "src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_nodes.csv",
     // 0.5);
 
+    //        ec.generatePathToPointEdge("src/main/resources/skopje_nodes.csv/part-00000",
+//                "src/main/resources/skopje_paths.csv/part-00000",
+//                "src/main/resources/skopje_path_to_points.csv");
+
+//    ec.generatePathToPointEdge("src/main/resources/belgradee_nodes.csv/part-00000",
+//                "src/main/resources/belgrade_paths.csv/part-00000",
+//                "src/main/resources/belgrade_path_to_points.csv");
+
+//    System.out.println(ec.generatePairs(session, "Belgrade"));
+
+//    System.out.println(ec.generatePairs(session, "Skopje"));
+
+
     //        UPLOAD to NEO4J
     //            System.out.println( loader.executeTransaction(session, "skopje_users.csv"));
     //        System.out.println( loader.executeTransaction(session, "belgrade_users.csv"));
-    //            System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
-    //        System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
-    //    System.out.println(
-    //        Loader.executeTransaction(
-    //            session, "belgrade_nodes.csv"));
-    //        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
-    //        System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
+//                System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
+//            System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
+//        System.out.println(Loader.executeTransaction(session, "belgrade_nodes.csv"));
+//            System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
+//            System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
     //        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
     //    System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
     //    System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
+
+    System.out.println(loader.loadAdditionalWays(session, "Belgrade"));
+    System.out.println(loader.loadAdditionalWays(session, "Skopje"));
+
     spark_session.stop();
     session.close();
     driver.close();

@@ -2,6 +2,10 @@ import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.Transaction;
 import org.neo4j.driver.TransactionWork;
+import scala.Tuple2;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Loader {
   private Session session;
@@ -117,6 +121,38 @@ public class Loader {
             });
     return res;
   }
+
+//   this method adds new way edges in order to connect disconnected subgraphs
+  public String loadAdditionalWays(Session session, String city) {
+    EdgeCreator ec = new EdgeCreator();
+    List<Tuple2<Long, Long>> pairs = new ArrayList<>(ec.generatePairs(session, city));
+
+    String res = "";
+
+    for (Tuple2<Long, Long> pair : pairs) {
+      long num1 = pair._1;
+      long num2 = pair._2;
+
+      String id = String.valueOf(num1) + String.valueOf(num2);
+
+      res = session.writeTransaction(new TransactionWork<String>() {
+        Result result;
+
+        @Override
+        public String execute(Transaction tx) {
+          result = tx.run("MATCH (p1:Point), (p2:Point)\n"
+                  + "WHERE p1.id = " + num1 + " and p2.id = " + num2 + "\n"
+                  + "MERGE (p1)-[w:way]->(p2)\n"
+                  + "SET w.id = '" + id + "', w.weight = 1000\n"
+                  + "RETURN count(w)");
+
+          return result.single().toString();
+        }
+      });
+    }
+    return res;
+  }
+
 
   String loadNearPoints(String filename) {
     return session
