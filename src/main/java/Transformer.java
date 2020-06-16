@@ -8,6 +8,45 @@ import org.apache.spark.sql.functions;
 import scala.Tuple2;
 
 public class Transformer {
+    public static void transformUsers (SparkSession ctx, String file)
+    {
+
+//        users file: id, name, CarOwner
+//        Skopje users - id starts with 111
+//        Belgrade users - id starts with 222
+        Dataset<Row> users = ctx.read().text(file);
+        JavaRDD users_rdd = users.toJavaRDD();
+
+        if( file.contains("S"))
+        {
+            users_rdd = users_rdd.map(t->
+            {
+                String [] list = t.toString().split(",");
+                String id = "111"+list[0].substring(1,list[0].length());
+                String name = list[1];
+                String car = list[2].substring(0, list[2].length()-1);
+                return id+","+name+","+car;
+            });
+            users_rdd.saveAsTextFile("src/main/resources/skopje_users.csv");
+
+
+        }
+        else if (file.contains("B"))
+        {
+            users_rdd = users_rdd.map(t->
+            {
+                String [] list = t.toString().split(",");
+                String id = "222"+list[0].substring(1,list[0].length());
+                String name = list[1];
+                String car = list[2].substring(0, list[2].length()-1);
+                return id+","+name+","+car;
+            });
+            users_rdd.saveAsTextFile("src/main/resources/belgrade_users.csv");
+
+        }
+
+
+    }
     public static JavaRDD transformNodes (SparkSession sparkSession, String file)
     {
         Dataset<Row> dataset = sparkSession.read().json(file);

@@ -16,7 +16,7 @@ import org.neo4j.driver.Session;
 
 public class Main {
 
-    static String HADOOP_COMMON_PATH = "C:\\Users\\Tamara Bojanic\\Desktop\\UPC\\BDM-SDM-joint-project\\src\\main\\resources\\winutils";
+    static String HADOOP_COMMON_PATH = "C:\\Users\\Iva\\Desktop\\UPC\\BDM\\Project\\joint-project\\src\\main\\resources\\winutils";
 
     public static void main(String[] args) {
         Driver driver;
@@ -27,13 +27,18 @@ public class Main {
         LogManager.getRootLogger().setLevel(Level.ERROR);
         LogManager.shutdown();
 
-        SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
-        JavaSparkContext ctx = new JavaSparkContext(conf);
+//        SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
+//        JavaSparkContext ctx = new JavaSparkContext(conf);
 
-        driver = GraphDatabase.driver("bolt://localhost:7687",AuthTokens.basic("neo4j", "password"));
+        driver = GraphDatabase.driver("bolt://localhost:11002",AuthTokens.basic("neo4j", "iva"));
         Session session = driver.session();
 
         SparkSession spark_session = SparkSession.builder().master("local").appName("GO2").getOrCreate();
+
+
+//        TRANSFORM USER ID
+//        transformer.transformUsers(spark_session, "src/main/resources/Susers.csv");
+//        transformer.transformUsers(spark_session, "src/main/resources/Busers.csv");
 
 ////       CONVERT JSON TO CSV nodes ( Skopje )
 //        JavaRDD rdd = transformer.transformNodes(spark_session, "src/main/resources/skopje_graph.json");
@@ -55,7 +60,8 @@ public class Main {
 
 
 //        UPLOAD to NEO4J
-//        System.out.println( loader.executeTransaction(session, "users.csv"));
+        System.out.println( loader.executeTransaction(session, "skopje_users.csv"));
+        System.out.println( loader.executeTransaction(session, "belgrade_users.csv"));
 //        System.out.println( loader.executeTransaction(session, "skopje_nodes.csv") );
 //        System.out.println( loader.executeTransaction(session, "skopje_ways.csv") );
 //        System.out.println( loader.executeTransaction(session, "belgrade_nodes.csv") );

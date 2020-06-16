@@ -16,9 +16,9 @@ public class Loader {
             @Override
             public String execute( Transaction tx )
             {
-                if (file.equalsIgnoreCase("users.csv")){
-                    result = tx.run( "LOAD CSV WITH HEADERS FROM 'file:///" + file + "' AS row\n" +
-                            "WITH toInteger(row.ID) AS id, row.Name AS name, row.CarOwner AS car_owner\n" +
+                if (file.equalsIgnoreCase("skopje_users.csv") || file.equalsIgnoreCase("belgrade_users.csv") ){
+                    result = tx.run( "LOAD CSV FROM 'file:///" + file + "' AS row\n" +
+                            "WITH toInteger(row[0]) AS id, row[1] AS name, row[2] AS car_owner\n" +
                             "MERGE (p:User {id: id})\n" +
                             "SET p.name = name, p.car_owner = car_owner\n" +
                             "RETURN count(p) as users");
