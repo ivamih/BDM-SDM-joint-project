@@ -8,11 +8,11 @@ import com.amazonaws.services.s3.model.*;
 
 import java.io.*;
 
-public class UploadObject {
+public class DataLake {
     public  static String resources = "C:\\Users\\Iva\\Desktop\\UPC\\BDM\\Project\\joint-project\\src\\main\\resources\\";
     Regions clientRegion;
     String bucketName;
-    UploadObject(Regions clientRegion, String bucketName)
+    DataLake(Regions clientRegion, String bucketName)
     {
         this.clientRegion = clientRegion;
         this.bucketName = bucketName;
@@ -111,7 +111,7 @@ public class UploadObject {
     }
 
     public static void main(String[] args) throws IOException {
-        UploadObject u = new UploadObject(Regions.EU_WEST_1, "joint-project" );
+        DataLake u = new DataLake(Regions.EU_WEST_1, "joint-project" );
 //        UPLOAD
         u.uploadFileToS3("Busers.csv");
         u.uploadFileToS3("Susers.csv");
