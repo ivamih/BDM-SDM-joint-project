@@ -108,10 +108,6 @@ public class EdgeCreator {
         Loader loader = new Loader(session);
         JavaSparkContext ctx = new JavaSparkContext(conf);
 
-//          CREATE SKOPJE PATH TO POINT EDGES
-//        generatePathToPointEdge("src/main/resources/skopje_nodes.csv/part-00000",
-//                "src/main/resources/skopje_paths_nodes.csv/part-00000",
-//                "src/main/resources/skopje_path_to_points.csv");
 
 ////        CREATE SKOPJE TAKES EDGES (USER-> PATH)
 ////        user_id, path_id

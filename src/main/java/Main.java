@@ -25,7 +25,7 @@ public class Main {
     SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
     JavaSparkContext ctx = new JavaSparkContext(conf);
 
-    driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "password"));
+    driver = GraphDatabase.driver("bolt://localhost:11002", AuthTokens.basic("neo4j", "iva"));
     Session session = driver.session();
     Loader loader = new Loader(session);
 
@@ -54,6 +54,7 @@ public class Main {
 ////        CREATE BELGRADE PATH NODES
 //        transformer.transformPaths(ctx, "src/main/resources/belgrade_paths_no_time.csv");
 
+//       GENERATE PATH TO POINT EDGE
 //        ec.generatePathToPointEdge(ctx, "src/main/resources/skopje_nodes.csv/part-00000",
 //                "src/main/resources/skopje_paths_nodes.csv/part-00000",
 //                "src/main/resources/skopje_path_to_points.csv");
@@ -62,10 +63,22 @@ public class Main {
 //                "src/main/resources/belgrade_paths_nodes.csv/part-00000",
 //                "src/main/resources/belgrade_path_to_points.csv");
 
+////        CREATE SKOPJE TAKES EDGES (USER-> PATH)
+////        user_id, path_id
+        ec.generateUserToPathEdge(ctx, "src/main/resources/skopje_paths_nodes.csv/part-00000",
+                "src/main/resources/skopje_users.csv/part-00000",
+                "src/main/resources/skopje_takes.csv");
+//
+////        CREATE BELGRADE TAKES EDGES (USER-> PATH)
+////        user_id, path_id
+        ec.generateUserToPathEdge(ctx, "src/main/resources/belgrade_paths_nodes.csv/part-00000",
+                "src/main/resources/belgrade_users.csv/part-00000",
+                "src/main/resources/belgrade_takes.csv");
 
-////            Infer BELGRADE near Nodes
+
+////            Infer BELGRADE near edges
 //        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_edges.csv",0.5);
-////            Infer SKOPJE near Nodes
+////            Infer SKOPJE near edges
 //        processor.inferNearPoints("src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_edges.csv",0.5);
 
 
@@ -92,16 +105,16 @@ public class Main {
 //                System.out.println(loader.loadNearPoints("skopje_near_edges.csv"));
 
         //    Valid recommendation
-        System.out.println(loader.naiveFindRideShareRecommendations(22265, 22271));
+//        System.out.println(loader.naiveFindRideShareRecommendations(22265, 22271));
         //    No recommendation search
-        System.out.println(loader.naiveFindRideShareRecommendations(1, 1));
+//        System.out.println(loader.naiveFindRideShareRecommendations(1, 1));
 
         // Naive recommendation, still not working, until associations are defined and we run and
         // identify time functions
 //    System.out.println(loader.findRideShareRecommendations("11180"));
 
         spark_session.stop();
-        session.close();
-        driver.close();
+//        session.close();
+//        driver.close();
     }
 }
