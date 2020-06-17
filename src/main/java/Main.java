@@ -25,7 +25,7 @@ public class Main {
         SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
         JavaSparkContext ctx = new JavaSparkContext(conf);
 
-        driver = GraphDatabase.driver("bolt://localhost:7687", AuthTokens.basic("neo4j", "iva"));
+        driver = GraphDatabase.driver("bolt://localhost:11002", AuthTokens.basic("neo4j", "iva"));
         Session session = driver.session();
         Loader loader = new Loader(session);
 
@@ -54,19 +54,19 @@ public class Main {
 ////        CREATE BELGRADE PATH NODES
 //        transformer.transformPaths(ctx, "src/main/resources/belgrade_paths_no_time.csv");
 
- //        ec.generatePathToPointEdge("src/main/resources/skopje_nodes.csv/part-00000",
-//                "src/main/resources/skopje_paths.csv/part-00000",
+//        ec.generatePathToPointEdge(ctx, "src/main/resources/skopje_nodes.csv/part-00000",
+//                "src/main/resources/skopje_paths_nodes.csv/part-00000",
 //                "src/main/resources/skopje_path_to_points.csv");
-
-//    ec.generatePathToPointEdge("src/main/resources/belgrade_nodes.csv/part-00000",
-//                "src/main/resources/belgrade_paths.csv/part-00000",
+//
+//        ec.generatePathToPointEdge(ctx, "src/main/resources/belgrade_nodes.csv/part-00000",
+//                "src/main/resources/belgrade_paths_nodes.csv/part-00000",
 //                "src/main/resources/belgrade_path_to_points.csv");
 
 
 //            Infer BELGRADE near Nodes
-//        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_nodes.csv",0.5);
+        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_edges.csv",0.5);
 //            Infer SKOPJE near Nodes
-//        processor.inferNearPoints("src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_nodes.csv",0.5);
+        processor.inferNearPoints("src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_edges.csv",0.5);
 
 
 
@@ -79,12 +79,16 @@ public class Main {
 //        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
 //        System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
 //        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
+//          System.out.println( loader.executeTransaction(session, "belgrade_path_to_points.csv") );
+//          System.out.println( loader.executeTransaction(session, "skopje_path_to_points.csv") );
 
-        //        System.out.println(loader.loadAdditionalWays(session, "Belgrade"));
+
+
+//        System.out.println(loader.loadAdditionalWays(session, "Belgrade"));
 //        System.out.println(loader.loadAdditionalWays(session, "Skopje"));
 
-        //    System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
-        //    System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
+//            System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
+//            System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
 
         // Naive recommendation, still not working, until associations are defined and we run and
         // identify time functions

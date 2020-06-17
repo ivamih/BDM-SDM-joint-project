@@ -42,7 +42,7 @@ public class EdgeCreator {
         test1RDD.saveAsTextFile(output_file);
     }
 
-    public static void generatePathToPointEdge(String points_file, String paths_file, String output_file) {
+    public static void generatePathToPointEdge(JavaSparkContext ctx, String points_file, String paths_file, String output_file) {
         String line = "";
         ArrayList<String> al = new ArrayList<String>();
 
@@ -59,8 +59,6 @@ public class EdgeCreator {
 
         Random ran = new Random();
 
-        SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
-        JavaSparkContext ctx = new JavaSparkContext(conf);
         JavaRDD<String> testRDD = ctx.textFile(paths_file);
 
         // header = path_id,start_point_id,end_point_id

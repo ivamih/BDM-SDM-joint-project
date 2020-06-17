@@ -98,17 +98,18 @@ public class Loader {
                             " MERGE (u)-[rel:takes]->(p)\n" +
                             " RETURN count(rel)");
                 }
-                //                else if (file.equalsIgnoreCase("skopje_user_path_edge.csv"))
-                //                {
-                //                    result = tx.run( "LOAD CSV WITH HEADERS FROM 'file:///" + file
-                // +"' AS row\n" +
-                //                            " WITH toInteger(row.user_id) AS user_id,
-                // toInteger(row.path_id) AS path_id\n" +
-                //                            " MATCH (u:User {id: user_id})\n" +
-                //                            " MATCH (p:Path {id: path_id})\n" +
-                //                            " MERGE (u)-[rel:takesPath]->(p)\n" +
-                //                            " RETURN count(rel)");
-                //                }
+                else if (file.equalsIgnoreCase("skopje_path_to_points.csv") || file.equalsIgnoreCase("belgrade_path_to_points.csv"))
+                {
+                    result = tx.run( "LOAD CSV FROM 'file:///" + file +"' AS row\n" +
+                            " WITH toInteger(row[0]) AS path_id, toInteger(row[1]) AS start_point_id, toInteger(row[2]) AS end_point_id \n" +
+                            " MATCH (p:Path {id: path_id})\n" +
+                            " MATCH (ps:Point {id: start_point_id})\n" +
+                            " MATCH (pe:Point {id: end_point_id})\n" +
+                            " MERGE (p)-[rel1:start_trip_at]->(ps)\n" +
+                            " MERGE (p)-[rel2:end_trip_at]->(pe)\n" +
+                            " RETURN count(rel1), count(rel2)");
+                }
+
                 return result.single().toString();
               }
             });
