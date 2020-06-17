@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.neo4j.driver.*;
 
+import static java.util.stream.Collectors.joining;
+
 
 public class Loader {
     private Session session;
@@ -163,6 +165,41 @@ public class Loader {
         .peek()
         .toString();
   }
+
+    String naiveFindRideShareRecommendations(int requestingUserId, int pathId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("requestedPathId", pathId);
+        params.put("requestingUserId", requestingUserId);
+        String query =
+                "MATCH (requestingUser: User {id: $requestingUserId})-[:takes]->(requestedPath: Path {id: $requestedPathId}),(requestedPath)-[:start_trip_at]->(requesterStartPoint), (requestedPath)-[:end_trip_at]->(requesterEndPoint)\n"
+                        + "MATCH (offeredPath: Path)-[:start_trip_at]-()-[:near]->(requesterStartPoint), (offeredPath: Path)-[:end_trip_at]-()-[:near]->(requesterEndPoint)\n"
+                        + "MATCH (offeringUser: User)-[:takes]->(offeredPath)\n"
+                        + "WHERE requestingUser <> offeringUser AND ABS(duration.between(time(requestedPath.time_of_day), time(offeredPath.time_of_day)).minutes) <= 30\n"
+                        + "RETURN offeringUser, offeredPath";
+        List<Record> records =
+                session.readTransaction(
+                        (tx) -> {
+                            Result result = tx.run(query, params);
+                            return result.list();
+                        });
+        if (records.isEmpty()) {
+            return "We have no recommendations for you now, check back later";
+        }
+        return records.stream()
+                .map(
+                        record -> {
+                            Value offeringUser = record.get("offeringUser");
+                            Value offeredPath = record.get("offeredPath");
+                            String offeringUserName = offeringUser.get("name").asString();
+                            String offeringCarStatus = offeringUser.get("car_owner").asString();
+                            StringBuilder userResponse = new StringBuilder().append(offeringUserName);
+                            if (offeringCarStatus.equals("True"))
+                                userResponse.append(" owns a car ");
+                            userResponse.append(" and takes a similar path as you and starts at ");
+                            userResponse.append(offeredPath.get("time_of_day").asString());
+                            return userResponse.toString();
+                        }).collect(joining("\n"));
+    }
 
   String findRideShareRecommendations(String pathId) {
     Map<String, Object> params = new HashMap<>();
