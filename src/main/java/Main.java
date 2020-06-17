@@ -58,12 +58,12 @@ public class Main {
 ////        CREATE BELGRADE PATH NODES
 //        transformer.transformPaths(ctx, "src/main/resources/belgrade_paths_no_time.csv");
 
-////            Infer BELGRADE near Nodes
-//        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_nodes.csv",
-//                0.5);
-////            Infer SKOPJE near Nodes
-//        processor.inferNearPoints(
-//            "src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_nodes.csv",0.5);
+//            Infer BELGRADE near Nodes
+        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_nodes.csv",
+                0.5);
+//            Infer SKOPJE near Nodes
+        processor.inferNearPoints(
+            "src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_nodes.csv",0.5);
 
 
 //        UPLOAD to NEO4J
@@ -79,7 +79,7 @@ public class Main {
         //    System.out.println(loader.loadNearPoints("belgrade_near_nodes.csv"));
         //    System.out.println(loader.loadNearPoints("skopje_near_nodes.csv"));
 
-        //      Naive recommendation, still not working, until associations are defined and we run and
+        // Naive recommendation, still not working, until associations are defined and we run and
         // identify time functions
         //    System.out.println(loader.findRideShareRecommendations("somePathId"));
         spark_session.stop();
