@@ -79,20 +79,20 @@ public class Main {
 //        System.out.println( loader.executeTransaction(session, "belgrade_ways.csv") );
 //        System.out.println( loader.executeTransaction(session, "skopje_paths_nodes.csv") );
 //        System.out.println( loader.executeTransaction(session, "belgrade_paths_nodes.csv") );
-//          System.out.println( loader.executeTransaction(session, "belgrade_path_to_points.csv") );
-//          System.out.println( loader.executeTransaction(session, "skopje_path_to_points.csv") );
+//        System.out.println( loader.executeTransaction(session, "belgrade_path_to_points.csv") );
+//        System.out.println( loader.executeTransaction(session, "skopje_path_to_points.csv") );
 
 
 
 //        System.out.println(loader.loadAdditionalWays(session, "Belgrade"));
 //        System.out.println(loader.loadAdditionalWays(session, "Skopje"));
 
-            System.out.println(loader.loadNearPoints("belgrade_near_edges.csv"));
-            System.out.println(loader.loadNearPoints("skopje_near_edges.csv"));
+//            System.out.println(loader.loadNearPoints("belgrade_near_edges.csv"));
+//            System.out.println(loader.loadNearPoints("skopje_near_edges.csv"));
 
         // Naive recommendation, still not working, until associations are defined and we run and
         // identify time functions
-            System.out.println(loader.findRideShareRecommendations("11180"));
+//            System.out.println(loader.findRideShareRecommendations("11180"));
 
         spark_session.stop();
         session.close();
