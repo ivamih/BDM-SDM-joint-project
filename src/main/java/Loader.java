@@ -168,12 +168,24 @@ public class Loader {
     Map<String, Object> params = new HashMap<>();
     params.put("pathId", pathId);
     String query =
-        "MATCH (requestedPath: Path {id: $pathId)),(requestedPath)-[:start]->(requesterStartPoint), (requestedPath)-[:end]->(requesterEndPoint)\n"
-            + "MATCH (offeredPath: Path)-[:start]-()-[:near]->(requesterStartPoint), (offeredPath: Path)-[:end]-()-[:near]->(requesterEndPoint)\n"
-            + "WHERE abs(offeredTime - requestedTime) <= 20mins\n"
-            + "MATCH (offeringUser: User)-[:has_path]->(offeredPath)\n"
-            + "RETURN offeringUser";
-    List<Record> list = session.readTransaction((tx) -> tx.run(query, params)).list();
-    return list.toString();
+        "MATCH (requestedPath: Path {id: $pathId}),(requestedPath)-[:start_trip_at]->(requesterStartPoint), (requestedPath)-[:end_trip_at]->(requesterEndPoint)\n"
+            + "MATCH (offeredPath: Path)-[:start_trip_at]-()-[:near]->(requesterStartPoint), (offeredPath: Path)-[:end_trip_at]-()-[:near]->(requesterEndPoint)\n"
+//            + "WHERE abs(offeredPath.time_of_day - requestedPath.time_of_day) <= 20\n"
+            + "MATCH (offeringUser: User)-[:takes]->(offeredPath)\n"
+            + "RETURN offeringUser, offeredPath";
+
+    String queryIvaTamara = "match (offered_end_point:Point)<-[:near]-(requested_end_point:Point)<-[:end_trip_at]-(requested_path:Path)-[:start_trip_at]->(requested_start_point:Point)-[:near]->(offered_start_point:Point)\n" +
+            "match (offered_end_point)<-[:end_trip_at]-(offered_path:Path)-[:start_trip_at]->(offered_start_point)\n" +
+            "where requested_path.id=11180\n" +
+            "return requested_end_point,offered_end_point,requested_start_point,offered_start_point, offered_path.id";
+
+    String pageRank = "CALL algo.pageRank.stream('Point', 'way', {iterations:20, dampingFactor:0.70})\n" +
+            "YIELD nodeId, score\n" +
+            "wHERE algo.asNode(nodeId).city=\"Belgrade\"\n" +
+            "RETURN algo.asNode(nodeId).id AS point,score\n" +
+            "ORDER BY score DESC";
+
+      List<Record> list = session.readTransaction((tx) -> tx.run(query, params)).list();
+      return list.toString();
   }
 }

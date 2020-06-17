@@ -4,3 +4,5 @@
 src/main/resources/belgrade_near_nodes.csv/
 src/main/resources/skopje_near_nodes.csv/
 data/
+src/main/resources/belgrade_near_edges.csv/
+src/main/resources/skopje_near_edges.csv/
