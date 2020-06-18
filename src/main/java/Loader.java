@@ -138,7 +138,7 @@ public class Loader {
         public String execute(Transaction tx) {
           result = tx.run("MATCH (p1:Point), (p2:Point)\n"
                   + "WHERE p1.id = " + num1 + " and p2.id = " + num2 + "\n"
-                  + "MERGE (p1)-[w:way]->(p2)\n"
+                  + "MERGE (p1)-[w:way]->(p2)\n" // todo : create an edge in another direction as well !!!
                   + "SET w.id = '" + id + "', w.weight = 1000\n"
                   + "RETURN count(w)");
 
