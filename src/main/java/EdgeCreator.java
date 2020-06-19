@@ -15,9 +15,8 @@ import static java.lang.Long.parseLong;
 
 
 public class EdgeCreator {
-    static String HADOOP_COMMON_PATH = "C:\\Users\\Iva\\Desktop\\UPC\\BDM\\Project\\joint-project\\src\\main\\resources\\winutils";
 
-    public static void generateUserToPathEdge(JavaSparkContext ctx, String paths_file, String users_file, String output_file)
+    public void generateUserToPathEdge(JavaSparkContext ctx, String paths_file, String users_file, String output_file)
     {
         String line = "";
         ArrayList<String> al = new ArrayList<String>();
@@ -34,7 +33,6 @@ public class EdgeCreator {
         }
 
         Random ran = new Random();
-
         JavaRDD<String> testRDD = ctx.textFile(users_file);
 
         // header = user_id,path_id
@@ -42,7 +40,7 @@ public class EdgeCreator {
         test1RDD.saveAsTextFile(output_file);
     }
 
-    public static void generatePathToPointEdge(JavaSparkContext ctx, String points_file, String paths_file, String output_file) {
+    public void generatePathToPointEdge(JavaSparkContext ctx, String points_file, String paths_file, String output_file) {
         String line = "";
         ArrayList<String> al = new ArrayList<String>();
 
@@ -58,7 +56,6 @@ public class EdgeCreator {
         }
 
         Random ran = new Random();
-
         JavaRDD<String> testRDD = ctx.textFile(paths_file);
 
         // header = path_id,start_point_id,end_point_id
@@ -96,34 +93,5 @@ public class EdgeCreator {
         }
 
         return pairs;
-    }
-
-
-    public static void main(String[] args) {
-        System.setProperty("hadoop.home.dir", HADOOP_COMMON_PATH);
-        SparkConf conf = new SparkConf().setAppName("GO2").setMaster("local[*]");
-        Driver driver = GraphDatabase.driver("bolt://localhost:11002", AuthTokens.basic("neo4j", "iva"));
-
-        Session session = driver.session();
-        Loader loader = new Loader(session);
-        JavaSparkContext ctx = new JavaSparkContext(conf);
-
-
-////        CREATE SKOPJE TAKES EDGES (USER-> PATH)
-////        user_id, path_id
-//        generateUserToPathEdge(ctx, "src/main/resources/skopje_paths_nodes.csv/part-00000",
-//                "src/main/resources/skopje_users.csv/part-00000",
-//                "src/main/resources/skopje_takes.csv");
-//
-////        CREATE BELGRADE TAKES EDGES (USER-> PATH)
-////        user_id, path_id
-//        generateUserToPathEdge(ctx, "src/main/resources/belgrade_paths_nodes.csv/part-00000",
-//                "src/main/resources/belgrade_users.csv/part-00000",
-//                "src/main/resources/belgrade_takes.csv");
-
-        //    LOAD TAKES EDGES INTO NEO4J
-        System.out.println( loader.executeTransaction(session, "skopje_takes.csv"));
-        System.out.println( loader.executeTransaction(session, "belgrade_takes.csv"));
-
     }
 }
