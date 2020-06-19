@@ -8,12 +8,14 @@ import org.apache.spark.sql.functions;
 import scala.Tuple2;
 
 public class Transformer {
+
     public static void transformUsers (SparkSession ctx, String file)
     {
-
-//        users file: id, name, CarOwner
-//        Skopje users - id starts with 111
-//        Belgrade users - id starts with 222
+        /*
+        users file: id, name, CarOwner
+        Skopje users - id starts with 111
+        Belgrade users - id starts with 222
+         */
         Dataset<Row> users = ctx.read().text(file);
         JavaRDD users_rdd = users.toJavaRDD();
 
@@ -28,8 +30,6 @@ public class Transformer {
                 return id+","+name+","+car;
             });
             users_rdd.saveAsTextFile("src/main/resources/skopje_users.csv");
-
-
         }
         else if (file.contains("B"))
         {
@@ -42,11 +42,9 @@ public class Transformer {
                 return id+","+name+","+car;
             });
             users_rdd.saveAsTextFile("src/main/resources/belgrade_users.csv");
-
         }
-
-
     }
+
     public static JavaRDD transformNodes (SparkSession sparkSession, String file)
     {
         Dataset<Row> dataset = sparkSession.read().json(file);
@@ -72,7 +70,8 @@ public class Transformer {
         }
         return rdd;
     }
-    public static void transformEdges (JavaRDD rdd, String file)
+
+    public static void transformWayEdges (JavaRDD rdd, String file)
     {
         JavaPairRDD<Integer, String> edges = rdd.mapToPair(t ->
         {
@@ -92,7 +91,6 @@ public class Transformer {
         // skip edges from n1 to n1
         JavaPairRDD<Integer, Tuple2<String, String>> joined = edges.join(edges).filter(t-> !t._2._1.equals(t._2._2));
 
-//        joined.foreach(t-> System.out.println(t));
         JavaRDD<String> joined_csv = joined.map(t->
         {
             String t1 = t._2._1.split(",")[0];
@@ -107,8 +105,6 @@ public class Transformer {
         else if (file.contains("belgrade")) {
             joined_csv.saveAsTextFile("src/main/resources/belgrade_ways.csv");
         }
-
-
     }
 
     public static void transformPaths(JavaSparkContext ctx, String file) {
@@ -118,12 +114,9 @@ public class Transformer {
         {
             String path_id = "";
 
-            if (file.contains("skopje"))
-            {
+            if (file.contains("skopje")) {
                 path_id = "111"+t.split(",")[0];
-            }
-            else if(file.contains("belgrade"))
-            {
+            } else if(file.contains("belgrade")) {
                 path_id = "222"+t.split(",")[0];
             }
             String repeatable_route = t.split(",")[1];
@@ -139,13 +132,51 @@ public class Transformer {
             return path_id + "," + repeatable_route + "," + time;
         }).distinct().coalesce(1);
 
-        if (file.contains("skopje"))
-        {
+        if (file.contains("skopje")) {
             path_nodes.saveAsTextFile("src/main/resources/skopje_paths_nodes.csv");
-        }
-        else if (file.contains("belgrade")) {
+        } else if (file.contains("belgrade")) {
             path_nodes.saveAsTextFile("src/main/resources/belgrade_paths_nodes.csv");
         }
     }
 
+    public void transformAllData (JavaSparkContext ctx, SparkSession spark_session) {
+        EdgeCreator ec = new EdgeCreator();
+        Processor processor = new Processor(spark_session);
+
+        // TRANSFORM USER FILE: TRANSFORM USER ID
+        transformUsers(spark_session, "src/main/resources/Susers.csv");
+        transformUsers(spark_session, "src/main/resources/Busers.csv");
+
+        // CONVERT JSON TO CSV point nodes ( Skopje ) AND TRANSFORM WAY EDGES BETWEEN SKOPJE NODES
+        JavaRDD rddS = transformNodes(spark_session, "src/main/resources/skopje_graph.json");
+        transformWayEdges(rddS,"src/main/resources/skopje_graph.json");
+
+        // CONVERT JSON TO CSV point nodes ( Belgrade ) AND TRANSFORM WAY EDGES BETWEEN BELGRADE NODES
+        JavaRDD rddB = transformNodes(spark_session, "src/main/resources/belgrade_graph.json");
+        transformWayEdges(rddB,"src/main/resources/belgrade_graph.json");
+
+        // CREATE SKOPJE AND BELGRADE PATH NODES
+        transformPaths(ctx, "src/main/resources/skopje_paths_no_time.csv");
+        transformPaths(ctx, "src/main/resources/belgrade_paths_no_time.csv");
+
+        // CREATE SKOPJE AND BELGRADE TAKES EDGES (USER-> PATH)
+        ec.generateUserToPathEdge(ctx, "src/main/resources/skopje_paths_nodes.csv/part-00000",
+                "src/main/resources/skopje_users.csv/part-00000",
+                "src/main/resources/skopje_takes.csv");
+        ec.generateUserToPathEdge(ctx, "src/main/resources/belgrade_paths_nodes.csv/part-00000",
+                "src/main/resources/belgrade_users.csv/part-00000",
+                "src/main/resources/belgrade_takes.csv");
+
+        // CREATE SKOPJE AND BELGRADE PATH TO POINT EDGE
+        ec.generatePathToPointEdge(ctx, "src/main/resources/skopje_nodes.csv/part-00000",
+                "src/main/resources/skopje_paths_nodes.csv/part-00000",
+                "src/main/resources/skopje_path_to_points.csv");
+        ec.generatePathToPointEdge(ctx, "src/main/resources/belgrade_nodes.csv/part-00000",
+                "src/main/resources/belgrade_paths_nodes.csv/part-00000",
+                "src/main/resources/belgrade_path_to_points.csv");
+
+        // INFER BELGRADE NEAR EDGES
+        processor.inferNearPoints("src/main/resources/skopje_nodes.csv", "src/main/resources/skopje_near_edges.csv",0.5);
+        processor.inferNearPoints("src/main/resources/belgrade_nodes.csv", "src/main/resources/belgrade_near_edges.csv",0.5);
+    }
 }
